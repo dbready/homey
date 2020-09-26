@@ -1,0 +1,14 @@
+#!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
+
+# List the largest items in the CWD or directory provided by argument
+
+if [ "$#" == 1 ]; then # directory provided
+    DIRECTORY="$1"
+else # stdin
+    DIRECTORY="."
+fi
+
+du -a "${DIRECTORY}" | sort -n -r

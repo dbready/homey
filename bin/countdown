@@ -1,0 +1,30 @@
+#!/bin/env python
+
+# Countdown in seconds with audible beep
+
+import argparse
+import datetime
+import sys
+import time
+
+
+def get_args():
+    parser = argparse.ArgumentParser(description="countdown in seconds")
+    parser.add_argument("seconds", nargs="?", type=int, default=60, help="seconds to countdown (default 60)")
+    args = parser.parse_args()
+    return args
+
+
+if __name__ == "__main__":
+    args = get_args()
+
+    z_length = len(str(args.seconds))
+    curr = datetime.datetime.now()
+    print(curr)
+    goal = curr + datetime.timedelta(seconds=args.seconds)
+    while curr < goal:
+        time.sleep(1)
+        curr = datetime.datetime.now()
+        delta_seconds = (goal - curr).total_seconds()
+        print(f"{str(round(delta_seconds)).zfill(z_length)}", end="\r", flush=True)
+    print(f"{datetime.datetime.now()} \a") # '\a' is alert

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Return now as UTC string as ISO8601-ish filename compatible
+
+# %N gives nanoseconds, use the 3 to round to milliseconds
+date --utc "+%Y%m%dT%H%M%S.%3NZ"

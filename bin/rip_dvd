@@ -1,0 +1,10 @@
+#!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
+
+# Backup DVD
+
+DST="${HOME}/Downloads/rips/"
+
+dvdbackup --progress --mirror --verbose --output="${DST}"

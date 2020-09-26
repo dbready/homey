@@ -1,0 +1,12 @@
+#!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
+
+# OCR image into text. Can supply multiple filenames
+
+for filename in "$@"
+do
+    imagebasename=$(basename "${filename}")
+    tesseract "${filename}" "${imagebasename}" -l eng
+done

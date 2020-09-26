@@ -1,0 +1,43 @@
+#!/bin/env python
+
+# Get the time around the world
+
+import datetime
+import sys
+
+try:
+    import zoneinfo
+except ImportError:
+    pass
+
+TZS = [
+    "UTC",
+    "Europe/London",
+    "America/New_York",
+    "America/Chicago",
+    "America/Los_Angeles",
+    "US/Hawaii",
+    "US/Eastern",
+    "US/Central",
+    "US/Mountain",
+    "US/Pacific",
+    "PRC",
+    "Asia/Hong_Kong",
+    "Australia/Sydney",
+]
+
+
+def main():
+    dt_utc = datetime.datetime.now(tz=datetime.timezone.utc)
+    dt_local = dt_utc.astimezone(None)
+    print("UTC\t{}".format(dt_utc.isoformat()))
+    print("Local\t{}".format(dt_local.isoformat()))
+    print("\tDay of year: {}".format(dt_local.strftime("%j")))
+    print("\tWeek of year: {}".format(dt_local.strftime("%U")))
+    if "zoneinfo" in sys.modules:
+        for tz in TZS:
+            print("{}\t\t{}".format(tz, dt_utc.astimezone(zoneinfo.ZoneInfo(tz))))
+
+
+if __name__ == "__main__":
+    main()

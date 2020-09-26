@@ -1,0 +1,24 @@
+#!/bin/env python
+
+# Decode URL quoted string
+
+import argparse
+from urllib.parse import unquote
+import sys
+
+
+def get_args():
+    parser = argparse.ArgumentParser(description="decode URL quoted string")
+    parser.add_argument("html", nargs="?", help="string to parse, otherwise stdin")
+    args = parser.parse_args()
+    return args
+
+
+if __name__ == "__main__":
+    args = get_args()
+
+    if args.html is not None:
+        print(unquote(args.html).strip())
+    else:
+        for line in sys.stdin:
+            print(unquote(line).strip())

@@ -1,0 +1,29 @@
+#!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
+
+# Retrieve the NWS weather forecast for location stored in environment variables 
+# `LATITUDE` and `LONGITUDE` or default to location of Sears Tower
+
+# National Weather Service API documentation https://www.weather.gov/documentation/services-web-api
+
+# Pull environment variable or default coordinates.
+# NWS requires exactly 4 decimal places
+LATITUDE="${LATITUDE:-41.8789}"
+LONGITUDE="${LONGITUDE:--87.6358}"
+
+# create request url
+URL=https://api.weather.gov/points/${LATITUDE},${LONGITUDE}
+# retrieve the data-dictionary surrounding the location
+PAYLOAD=$(curl --silent "${URL}")
+# extract the URL of the forecast, use `--raw-output` to remove quotations
+FORECAST=$(echo "${PAYLOAD}" | jq --raw-output ".properties.forecast")
+#FORECAST=$(echo ${PAYLOAD} | jq ".properties.forecastHourly")
+
+# retrieve the forecast, require real units
+# must supply `--get` to append query parameters, otherwise curl sends as a POST
+RESPFORECAST=$(curl --silent --get "${FORECAST}" --data-urlencode units=si)
+
+# return forecast for next two periods
+echo "${RESPFORECAST}" | jq --color-output ".properties.periods[:2]"

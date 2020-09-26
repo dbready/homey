@@ -1,0 +1,13 @@
+#!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
+
+# Convert supplied SVG filename(s) to transparent png
+
+for filename in "$@"
+do
+    noextension=$(basename "${filename}" .svg)
+    pngoutput="${noextension}.png"
+    inkscape --without-gui --export-background-opacity=0 --export-png="${pngoutput}" in "${filename}"
+done

@@ -1,0 +1,27 @@
+#!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
+
+# Generate a QR barcode representing the credentials to a WIFI point. Writes SVG to stdout.
+
+# T type WEP, WPA, WPA2-EAP, nopass
+# S ssid
+# P password
+# if SSID is hidden, need to append parameter `H:true`
+# WIFI:T:WPA;S:<SSID>;P:<password>;;
+
+if [ "$#" != 2 ]; then # file argument
+    echo "Must supply arguments <SSID> <PASSWORD>"
+    exit 1
+else # stdin
+    SSID="$1"
+    PASS="$2"
+fi
+
+# @TODO escaping?
+QRTEXT="WIFI:T:WPA;S:${SSID};P:${PASS};;"
+
+# t (type?) as SVG
+# l (level?) error correction as high
+qrencode -t SVG -l H "${QRTEXT}"

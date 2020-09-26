@@ -1,0 +1,38 @@
+#!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
+
+# Convert a "simple" Latex .tex file into SVG. Assumed for turning equations into SVG
+
+# Example .tex
+# \documentclass{article}
+# \begin{document}
+# \thispagestyle{empty}
+# %%% EQUATION HERE %%%
+# $ \frac{d^2 y}{dx^2} $
+# %%% EQUATION HERE %%%
+# \end{document}
+
+# create temp dir
+TEMP_DIR=$(mktemp -d)
+
+function cleanup {
+  rm -rf "$TEMP_DIR"
+  echo "Deleted directory $TEMP_DIR"
+}
+
+# register the cleanup function on EXIT signal
+trap cleanup EXIT
+
+for filename in "$@"
+do
+    # extension needs to be lowercase
+    base=$(basename "${filename}" .tex)
+    # x.tex -> x.pdf
+    xelatex -output-directory="${TEMP_DIR}" "${filename}"
+    # crop pdf (not perfect, but ok): x.pdf -> x-crop.pdf
+    pdfcrop --xetex "${TEMP_DIR}/${base}.pdf"
+    # generate svg: /tmp/x-crop.pdf -> x.svg
+    pdf2svg "${TEMP_DIR}/${base}-crop.pdf" "${base}.svg"
+done

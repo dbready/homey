@@ -1,0 +1,12 @@
+#!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
+
+# Add a newline after periods. From stdin or file argument
+
+if [ "$#" == 1 ]; then # file argument
+    awk '{ gsub(/\. +/, ".\n"); print }' "$1"
+else # stdin
+    awk '{ gsub(/\. +/, ".\n"); print }'
+fi

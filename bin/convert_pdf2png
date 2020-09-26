@@ -1,0 +1,12 @@
+#!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
+
+# Convert PDF file(s) pages to png.
+
+for filename in "$@"
+do
+    bname=$(basename "${filename}")
+    pdftoppm -png -forcenum "${filename}" "${bname}"
+done

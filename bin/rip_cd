@@ -1,0 +1,8 @@
+#!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
+
+# Backup audio CD
+
+cdparanoia --verbose --batch --output-wav 

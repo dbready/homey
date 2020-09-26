@@ -1,0 +1,12 @@
+#!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
+
+# Remove redundant (>2) newlines. From stdin or file argument
+
+if [ "$#" == 1 ]; then # file
+    awk '!NF {if (++n <= 2) print; next}; {n=0;print}' "$1"
+else #stdin
+    awk '!NF {if (++n <= 2) print; next}; {n=0;print}'
+fi

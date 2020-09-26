@@ -1,0 +1,184 @@
+#!/usr/bin/env python
+
+# Script to run command(s) in parallel across a pool of workers (default number of cores).
+# Explicit is better than implicit - shell magic does not work. Can read from stdin, file, or command line argument.
+#
+# Single command repeated N times
+# > multiplex.py --repeat=6 - "sleep 10"
+#
+# Single command repeated 18 times, limited to 2 workers, each job allowed 15 seconds
+# > multiplex.py --repeat=18 --workers=2 --timeout=15 - "sleep 10"
+#
+# Filename of newline separated commands
+# > multiplex.py joblist.txt
+#
+# Jobs from stdin, commands newline separated
+# > cat joblist.txt | multiplex.py
+#
+# Capture STDOUT of commands - job output will be interleaved as generated
+# multiplex.py joblist.txt > jobsout.txt
+#
+# Capture STDOUT of commands, but identify origin thread
+# multiplex.py --identify joblist.txt > jobsout.txt
+
+
+import argparse
+import datetime
+import logging
+import multiprocessing
+import os
+import shlex
+import subprocess
+import sys
+import threading
+import time
+
+logger = logging.getLogger(__name__)
+worker_log = logging.getLogger("worker")
+# job_log to spit job output back to stdout instead of stderr
+# logging library can handle threading/processing so we do not get
+# mangled output
+job_log = logging.getLogger("job")
+
+
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--identify", action="store_true", help="identify origin worker"
+    )
+    parser.add_argument(
+        "--repeat",
+        dest="repeat",
+        type=int,
+        default=0,
+        help="number of times to repeat each job",
+    )
+    parser.add_argument(
+        "--timeout",
+        dest="timeout",
+        type=int,
+        default=-1,
+        help="timeout in seconds per job",
+    )
+    parser.add_argument(
+        "--workers",
+        dest="workers",
+        type=int,
+        default=-1,
+        help="number worker processes",
+    )
+    parser.add_argument(
+        "--verbose", action="store_true", help="extra master diagnostics"
+    )
+    parser.add_argument("command", nargs="*", help="command to run")
+    return parser.parse_args()
+
+
+class Worker(threading.Thread):
+    def __init__(self, queue, timeout=None):
+        super(Worker, self).__init__()
+        self.queue = queue
+        self.timeout = timeout
+        self.proc = None
+
+    def run(self):
+        # grab jobs from the queue until receiving a stop (None)
+        for job in iter(self.queue.get, None):
+            # worker is a thread, each job is run in a new thread, which spawns a subprocess to execute the job
+            # the thread is run with a timeout to halt if/when required
+            # the run-around is required because there is not a good way(?) to get the subprocess stdout
+            # with a timeout (.communicate() can block forever on large output)
+            def runner():
+                self.proc = subprocess.Popen(job, stdout=subprocess.PIPE)
+                for line in self.proc.stdout:
+                    job_log.info(line.decode("utf8").strip())
+                self.proc.wait()
+
+            thread = threading.Thread(target=runner)
+            worker_log.debug(f"Starting job: {' '.join(job)}")
+            start_time = datetime.datetime.now()
+            thread.start()
+
+            thread.join(timeout)
+            delta = datetime.datetime.now() - start_time
+            if thread.is_alive():
+                worker_log.info(f"Job timeout after: {delta}")
+                self.proc.terminate()
+                thread.join()
+            else:
+                worker_log.debug(f"Job complete in: {delta}")
+
+
+if __name__ == "__main__":
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter("%(asctime)s %(threadName)s: %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    worker_log.addHandler(handler)
+    logger.setLevel(logging.INFO)
+
+    args = get_args()
+    if args.verbose:
+        logger.setLevel(logging.DEBUG)
+        worker_log.setLevel(logging.DEBUG)
+
+    job_handler = logging.StreamHandler(sys.stdout)
+    job_formatter = logging.Formatter("%(message)s")
+    if args.identify:
+        job_formatter = logging.Formatter("%(asctime)s %(threadName)s\t%(message)s")
+    job_handler.setFormatter(job_formatter)
+    job_log.addHandler(job_handler)
+    job_log.setLevel(logging.INFO)
+
+    worker_count = args.workers
+    if worker_count <= 0:
+        worker_count = max(1, multiprocessing.cpu_count())
+    logger.debug(f"Deploying tasks to {worker_count} workers")
+
+    timeout = None
+    if args.timeout > 0:
+        timeout = args.timeout
+        logger.debug(f"Job timeout set to {timeout} seconds")
+
+    jobs = multiprocessing.Queue()
+    workers = []
+    for _ in range(worker_count):
+        work = Worker(jobs, timeout)
+        work.start()
+        workers.append(work)
+
+    commands = []
+    if args.command and args.command[0] == "-":  # command as argument
+        logger.debug("Reading jobs from command line")
+        commands.append(" ".join(args.command[1:]))
+    elif args.command and args.command[0] != "-":  # read from filename
+        logger.debug("Reading jobs from file")
+        with open(args.command[0], "r") as handle:
+            for line in handle:
+                commands.append(line.strip())
+    else:  # stdin
+        logger.debug("Reading jobs from stdin")
+        for line in sys.stdin:
+            if line.strip():
+                commands.append(line.strip())
+
+    # split commands based on shell rules
+    commands = map(shlex.split, commands)
+
+    # put commands in the queue, optionally with a repeat
+    for command in commands:
+        if args.repeat > 0:
+            for _ in range(args.repeat):
+                jobs.put(command)
+        else:
+            jobs.put(command)
+
+    # sentinel to signal to workers queue is empty
+    for _ in range(worker_count):
+        jobs.put(None)
+
+    # shut down workers
+    for worker in workers:
+        worker.join()
+
+    logger.debug("All jobs completed")

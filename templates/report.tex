@@ -1,0 +1,54 @@
+\documentclass[]{report}
+
+\usepackage{booktabs}       % better tables
+\usepackage[]{datetime2}    % isoformatting
+\usepackage{fullpage}       % smaller margins
+\usepackage{graphicx}       % include images
+\usepackage[colorlinks]{hyperref}     % links
+\usepackage{xcolor}         % non-hideous colors
+
+\definecolor{url_blue}{rgb}{0.0, 0.4, 1.0}
+
+\hypersetup{
+    linkbordercolor = {white},
+    linkcolor = {url_blue},
+    citecolor = {url_blue},
+    urlcolor = {url_blue},
+}
+
+\graphicspath{
+    {plots/},
+    {plots/images}
+}
+
+\title{Why do cats love boxes?}
+\author{A \and B \and C}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\pagebreak
+
+\section{Introduction}
+Back to real science. \href{https://archive.org/}{Not a phishing link}
+
+\begin{table}
+\begin{tabular}{lr}  
+\toprule
+Header & Other \\
+\midrule
+Value & 1 \\
+Value & 2 \\
+\bottomrule
+\end{tabular}
+\caption[Caption name]{I am a description.}
+\label{table:table_name}
+\end{table}
+
+\end{document}

@@ -1,0 +1,12 @@
+#!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
+
+# Pretty print json from filename or STDIN
+
+if [ "$#" == 1 ]; then # filename
+    jq . "$1"
+else # stdin
+    jq . -
+fi

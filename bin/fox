@@ -1,0 +1,20 @@
+#!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
+
+# Launch a fresh Firefox profile and delete when done with it
+
+# create temp dir
+TEMP_DIR=$(mktemp -d)
+echo "Saving profile to ${TEMP_DIR}"
+
+function cleanup {      
+  rm -rf "${TEMP_DIR}"
+  echo "Deleted directory ${TEMP_DIR}"
+}
+
+# register the cleanup function on EXIT signal
+trap cleanup EXIT
+
+firefox --profile "${TEMP_DIR}"

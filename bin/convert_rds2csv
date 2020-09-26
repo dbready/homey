@@ -1,0 +1,13 @@
+#!/usr/bin/env Rscript
+
+# Convert Rlang .rds dataframe to .csv
+# > convert_rds2csv.sh rdataframe.rds decoded.csv
+
+args = commandArgs(trailingOnly = TRUE)
+
+rds_filename <- args[1L]
+csv_outname <- args[2L]
+
+df <- readRDS(rds_filename)
+
+write.csv(df, csv_outname, row.names=FALSE, eol="\n", fileEncoding="UTF-8")

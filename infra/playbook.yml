@@ -1,0 +1,70 @@
+---
+- hosts: all
+  become: true
+  become_user: root
+
+  tasks:
+    - name: install terminal programs
+      package:
+        state: present
+        name:
+          - curl
+          - dos2unix
+          - fd-find
+          - git
+          - htop
+          - jq
+          - mercurial
+          - neovim
+          - pandoc
+          - python3
+          - ripgrep
+          - sqlite3
+          - tmux
+          - wget
+
+    - name: install gui programs
+      package:
+        state: present
+        name:
+          - inkscape
+          - mpv
+          - vlc
+
+    - name: install common headers
+      package:
+        state: present
+        name:
+          - libpq-dev
+
+    - name: dbeaver apt-key
+      apt_key:
+        url: "https://dbeaver.io/debs/dbeaver.gpg.key"
+        state: present
+
+    - name: dbeaver-ce apt repository
+      apt_repository:
+        repo: deb https://dbeaver.io/debs/dbeaver-ce /
+        state: present
+        update_cache: yes
+
+    - name: dbeaver-ce install
+      apt:
+        name: dbeaver-ce
+        state: present
+
+    - name: Microsoft apt-key
+      apt_key:
+        url: "https://packages.microsoft.com/keys/microsoft.asc"
+        state: present
+
+    - name: VSCode apt repository
+      apt_repository:
+        repo: deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main
+        state: present
+        update_cache: yes
+
+    - name: VSCode install
+      apt: 
+        name: code
+        state: present

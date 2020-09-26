@@ -1,0 +1,11 @@
+#!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
+
+# Convert audio files to .flac
+
+for fname in "$@"
+do
+    flac --best --replay-gain "$fname"
+done
