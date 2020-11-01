@@ -30,13 +30,17 @@ TZS = [
 def main():
     dt_utc = datetime.datetime.now(tz=datetime.timezone.utc)
     dt_local = dt_utc.astimezone(None)
-    print("UTC\t{}".format(dt_utc.isoformat()))
-    print("Local\t{}".format(dt_local.isoformat()))
-    print("\tDay of year: {}".format(dt_local.strftime("%j")))
-    print("\tWeek of year: {}".format(dt_local.strftime("%U")))
+    print(f"UTC\t{dt_utc.isoformat()}")
+    print(f"Local\t{dt_local.isoformat()}")
+    print(f"\t{dt_local.strftime('%j') : >7} : day of year")
+    print(f"\t{dt_local.strftime('%U') : >7} : week of year")
+    newyear_delta = dt_local.date() - datetime.date(
+        year=dt_local.year + 1, month=1, day=1
+    )
+    print(f"\t{abs(newyear_delta.days) : >7} : days to next year")
     if "zoneinfo" in sys.modules:
         for tz in TZS:
-            print("{}\t\t{}".format(tz, dt_utc.astimezone(zoneinfo.ZoneInfo(tz))))
+            print(f"{tz : >20} : {dt_utc.astimezone(zoneinfo.ZoneInfo(tz))}")
 
 
 if __name__ == "__main__":
