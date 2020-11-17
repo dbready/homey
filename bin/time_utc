@@ -1,4 +1,7 @@
 #!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
 
 # Return now as UTC string as ISO8601-ish filename compatible
 
