@@ -1,0 +1,17 @@
+#!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
+
+# Backup file(s) with current timestamp
+# > backup_file mythesis.tex
+# Creates file: mythesis.tex.20060102T1504.bak
+# > backup_file *.txt
+
+# utc with second resolution
+now=$(date --utc "+%Y%m%dT%H%MZ")
+
+for fname in "$@"
+do
+    cp "${fname}" "${fname}"."${now}".bak
+done
