@@ -27,17 +27,28 @@ TZS = [
 ]
 
 
+def count_weekdays(initial, end):
+    count = 0
+    current = datetime.date(year=initial.year, month=initial.month, day=initial.day)
+    while current < end:
+        # Monday = 1, Sunday=7
+        if current.isoweekday() < 6:
+            count += 1
+        current += datetime.timedelta(days=1)
+    return count
+
+
 def main():
     dt_utc = datetime.datetime.now(tz=datetime.timezone.utc)
     dt_local = dt_utc.astimezone(None)
+    next_year = datetime.date(year=dt_local.year + 1, month=1, day=1)
+    newyear_delta = next_year - dt_local.date()
     print(f"UTC\t{dt_utc.isoformat()}")
     print(f"Local\t{dt_local.isoformat()}")
     print(f"\t{dt_local.strftime('%j') : >7} : day of year")
     print(f"\t{dt_local.strftime('%U') : >7} : week of year")
-    newyear_delta = dt_local.date() - datetime.date(
-        year=dt_local.year + 1, month=1, day=1
-    )
-    print(f"\t{abs(newyear_delta.days) : >7} : days to next year")
+    print(f"\t{newyear_delta.days : >7} : days to next year")
+    print(f"\t{count_weekdays(dt_local, next_year) : >7} : weekdays to next year")
     if "zoneinfo" in sys.modules:
         for tz in TZS:
             print(f"{tz : >20} : {dt_utc.astimezone(zoneinfo.ZoneInfo(tz))}")
