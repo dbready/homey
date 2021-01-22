@@ -1,0 +1,21 @@
+#!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
+
+# Run Jupyter notebook(s) in place, saving the output inside the notebook.
+# > notebook_exec Untitled241.ipynb
+# > notebook_exec *.ipynb
+
+# other flags
+# --allow-errors    continue running notebook on errored cell
+# --clear-output    remove existing cell output
+# --debug           debug logging
+# --stdout          output notebook to stdout
+
+for filename in "$@"
+do
+    # nbconvert defaults to 30 second timeout for entire notebook
+    # must set ExecutePreprocessor.timeout to -1 to disable
+    jupyter nbconvert --execute --ExecutePreprocessor.timeout=-1 --to=notebook --inplace "${filename}"
+done
