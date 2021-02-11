@@ -27,6 +27,20 @@ def view_form(request):
     return render(request, 'form.html', context)
 ```
 
+## Django Oracle Legacy DB Schema
+
+If needing to specify the schema, table connection has specific formatting requirements:
+
+```python
+class Foo(models.Model):
+	foo_pk = models.IntegerField(primary_key=True, null=False, db_column="ridiculous_legacy_name)
+	
+	class Meta:
+		managed = False
+		# note the formatting
+		db_table = '"SCHEMA"."TABLE"'
+```
+
 ## Matplotlib Font Size
 
 https://stackoverflow.com/questions/3899980/how-to-change-the-font-size-on-a-matplotlib-plot
@@ -75,3 +89,17 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 ```
+
+## Anaconda
+
+### Disable launching into the base conda environment
+
+https://stackoverflow.com/a/54560785
+
+`conda config --set auto_activate_base false`
+
+### Specify Python Version
+
+Python is a package not an argument.
+
+`conda create --name=foo python=3.9`
