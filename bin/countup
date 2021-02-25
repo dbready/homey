@@ -1,0 +1,20 @@
+#!/bin/env python
+
+# Countup in seconds
+
+import datetime
+import time
+
+if __name__ == "__main__":
+    start = datetime.datetime.now()
+    print(start)
+    try:
+        while True:
+            time.sleep(1)
+            current = datetime.datetime.now()
+            delta_seconds = (current - start).total_seconds()
+            print(f"{str(round(delta_seconds))}", end="\r", flush=True)
+    except KeyboardInterrupt:
+        # good ol Ctrl-C
+        print("\n", datetime.datetime.now())
+        print(delta_seconds, "seconds")
