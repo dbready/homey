@@ -6,39 +6,42 @@
   tasks:
     - name: install terminal programs
       package:
+        name: "{{ item }}"
         state: present
-        name:
-          - curl
-          - dos2unix
-          - fd-find
-          - fish
-          - git
-          - htop
-          - jq
-          - mercurial
-          - miller
-          - neovim
-          - pandoc
-          - python3
-          - ripgrep
-          - sqlite3
-          - tmux
-          - units
-          - wget
+      with_items:
+        - curl
+        - dos2unix
+        - fd-find
+        - fish
+        - git
+        - htop
+        - jq
+        - mercurial
+        - miller
+        - neovim
+        - pandoc
+        - python3
+        - ripgrep
+        - sqlite3
+        - tmux
+        - units
+        - wget
 
     - name: install gui programs
       package:
+        name: "{{ item }}"
         state: present
-        name:
-          - inkscape
-          - mpv
-          - vlc
+      with_items:
+        - inkscape
+        - mpv
+        - vlc
 
     - name: install common headers
       package:
+        name: "{{ item }}"
         state: present
-        name:
-          - libpq-dev
+      with_items:
+        - libpq-dev
 
     - name: dbeaver apt-key
       apt_key:
