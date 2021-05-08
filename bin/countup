@@ -16,5 +16,10 @@ if __name__ == "__main__":
             print(f"{str(round(delta_seconds))}", end="\r", flush=True)
     except KeyboardInterrupt:
         # good ol Ctrl-C
-        print("\n", datetime.datetime.now())
-        print(delta_seconds, "seconds")
+        print()  # newline after the ^C
+        print(datetime.datetime.now())
+        print(f"{delta_seconds:.2f} seconds")
+        minutes = delta_seconds // 60
+        if minutes > 0:
+            remainder = delta_seconds % 60
+            print(f"{minutes:.0f} minutes {remainder:.2f} seconds")
