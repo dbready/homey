@@ -1,0 +1,28 @@
+#!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
+
+# Take a screenshot, OCR, and print
+
+# create temp dir
+TEMP_DIR=$(mktemp -d)
+
+function cleanup {
+  rm -rf "$TEMP_DIR"
+}
+
+# register the cleanup function on EXIT signal
+trap cleanup EXIT
+
+image_dst="${TEMP_DIR}/maim.png"
+# quality 10 should be best and was significantly smaller on png test
+maim --quality=10 --select "${image_dst}"
+
+# note that tesseract will autoappend a ".txt"
+txt_dst="${TEMP_DIR}/extracted_text"
+# pipe output to dev/null to eliminate the banner message
+# pick an arbitrary dpi (non retina screens are ~100dpi)
+tesseract --dpi 100 "${image_dst}" "${txt_dst}" > /dev/null 2>&1
+
+cat "${txt_dst}.txt"
