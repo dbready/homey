@@ -1,0 +1,48 @@
+#!/usr/bin/env python
+
+# Print list of unique files as defined by a file hash (currently using blake2b)
+
+import argparse
+import hashlib
+import os
+
+
+def get_args():
+    parser = argparse.ArgumentParser(
+        description="Print the first found file with unique contents (defined by file blake2b hash) under the src directory"
+    )
+    parser.add_argument("src")
+    return parser.parse_args()
+
+
+def hash_filename(filename):
+    # algorithm choice arbitrary, but supposedly fast based on internet stranger
+    hasher = hashlib.blake2b()
+    with open(filename, "rb") as handle:
+        chunk = handle.read(8192)
+        while chunk:
+            hasher.update(chunk)
+            chunk = handle.read(8192)
+    return hasher.hexdigest()
+
+
+def gen_uniques(src):
+    observed = set()
+    for path, dirs, fnames in os.walk(src):
+        for fname in sorted(fnames):
+            filename = os.path.join(path, fname)
+            checksum = hash_filename(filename)
+            if checksum not in observed:
+                observed.add(checksum)
+                yield filename
+
+
+def main(src):
+    filenames = gen_uniques(src)
+    for filename in filenames:
+        print(filename)
+
+
+if __name__ == "__main__":
+    args = get_args()
+    main(args.src)
