@@ -31,6 +31,12 @@ def gen_uniques(src):
     for path, dirs, fnames in os.walk(src):
         for fname in sorted(fnames):
             filename = os.path.join(path, fname)
+            # @TODO this is slow (reads all bytes from disk)
+            # could imagine doing a two-pass system
+            #   1) build list of unique file sizes
+            #   2) if there is a collission on file size then hash file contents
+            # would be more book-keeping, plus memory for (filesize, filepath, maybe[contents_hash])
+            # but reading network/HDD, would be enormous time sizings for typical directory contents
             checksum = hash_filename(filename)
             if checksum not in observed:
                 observed.add(checksum)
