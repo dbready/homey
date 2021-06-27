@@ -9,9 +9,9 @@ import os
 
 def get_args():
     parser = argparse.ArgumentParser(
-        description="Print the first found file with unique contents (defined by file blake2b hash) under the src directory"
+        description="Print the first found file with unique contents (defined by file blake2b hash) recursively under the src directory"
     )
-    parser.add_argument("src")
+    parser.add_argument("src", default=".", nargs='?')
     return parser.parse_args()
 
 
@@ -45,4 +45,5 @@ def main(src):
 
 if __name__ == "__main__":
     args = get_args()
-    main(args.src)
+    src = os.path.normpath(args.src)
+    main(src)
