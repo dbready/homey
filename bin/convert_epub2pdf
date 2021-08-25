@@ -1,0 +1,20 @@
+#!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
+
+# Convert .epub to .pdf
+
+filename=$1
+destination=${filename}.pdf
+
+set -x
+
+pandoc \
+    --pdf-engine=xelatex \
+    --standalone \
+    --to=latex \
+    --toc \
+    --variable=geometry:margin=2.5cm \
+    --output="${destination}" \
+    "${filename}"
