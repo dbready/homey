@@ -4,27 +4,52 @@
 
 import argparse
 import datetime
-import sys
 import time
 
 
-def get_args():
+def get_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="countdown in seconds")
-    parser.add_argument("seconds", nargs="?", type=int, default=60, help="seconds to countdown (default 60)")
+    parser.add_argument(
+        "--silent", dest="is_silent", action="store_true", help="do not beep"
+    )
+    parser.add_argument(
+        "seconds",
+        nargs="?",
+        type=int,
+        default=60,
+        help="seconds to countdown (default 60)",
+    )
     args = parser.parse_args()
     return args
+
+
+def get_date_string(dt: datetime) -> str:
+    return dt.strftime("%Y-%m-%d %H:%M:%S %Z")
 
 
 if __name__ == "__main__":
     args = get_args()
 
-    z_length = len(str(args.seconds))
-    curr = datetime.datetime.now()
-    print(curr)
-    goal = curr + datetime.timedelta(seconds=args.seconds)
-    while curr < goal:
-        time.sleep(1)
-        curr = datetime.datetime.now()
-        delta_seconds = (goal - curr).total_seconds()
-        print(f"{str(round(delta_seconds)).zfill(z_length)}", end="\r", flush=True)
-    print(f"{datetime.datetime.now()} \a") # '\a' is alert
+    local_dt = datetime.datetime.now(datetime.timezone.utc).astimezone()
+    print(get_date_string(local_dt))
+
+    zero_width = len(str(args.seconds))
+    # tz aware vs naive - easier to recreate the dt object and use that one for calculations
+    current = datetime.datetime.now()
+    goal = current + datetime.timedelta(seconds=args.seconds)
+    try:
+        while current < goal:
+            time.sleep(1)
+            current = datetime.datetime.now()
+            delta_seconds = (goal - current).total_seconds()
+            print(
+                f"{str(round(delta_seconds)).zfill(zero_width)}", end="\r", flush=True
+            )
+    except KeyboardInterrupt:
+        pass
+    completed = datetime.datetime.now(datetime.timezone.utc).astimezone()
+    date_string = get_date_string(completed)
+    if args.is_silent:
+        print(f"{date_string}")
+    else:
+        print(f"{date_string} \a")  # '\a' is alert
