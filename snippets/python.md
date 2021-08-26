@@ -1,5 +1,16 @@
 # Python
 
+
+## Local Datetime Timezone
+
+```
+import datetime
+
+local_dt = datetime.datetime.now(datetime.timezone.utc).astimezone()
+local_timezone = local_dt.tzinfo
+```
+
+
 ## Django form
 
 ```html
