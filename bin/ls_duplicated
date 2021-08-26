@@ -1,0 +1,62 @@
+#!/usr/bin/env python
+
+# Print list of duplicated files as defined by a file size + file hash (using blake2b)
+
+import argparse
+from collections import defaultdict
+import hashlib
+import os
+
+
+def get_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Print the files with unique contents (defined by file blake2b hash) recursively under the src directory"
+    )
+    parser.add_argument("src", default=".", nargs="?")
+    return parser.parse_args()
+
+
+def hash_filename(filename: str) -> str:
+    # algorithm choice arbitrary, but supposedly fast based on internet stranger
+    hasher = hashlib.blake2b()
+    with open(filename, "rb") as handle:
+        chunk = handle.read(8192)
+        while chunk:
+            hasher.update(chunk)
+            chunk = handle.read(8192)
+    return hasher.hexdigest()
+
+
+def get_file_collection(src_dir: str):
+    observed = defaultdict(list)
+    for path, dirs, fnames in os.walk(src_dir):
+        # sorting the filenames, but unsure if os.walk has deterministic order
+        # which would result in random directory traversal
+        for fname in sorted(fnames):
+            filename = os.path.normpath(os.path.join(path, fname))
+            fsize = os.path.getsize(filename)
+            observed[fsize].append(filename)
+    return observed
+
+
+def main(src):
+    file_collection = get_file_collection(src)
+    for filenames in file_collection.values():
+        # no collisions if only 1 file of given size
+        if len(filenames) == 1:
+            continue
+        hashes = defaultdict(list)
+        # sorting here might be redundant, depending on how
+        # os.walk operates
+        for filename in sorted(filenames):
+            the_hash = hash_filename(filename)
+            hashes[the_hash].append(filename)
+        for hash_str, matches in hashes.items():
+            if len(matches) > 1:
+                for match in matches:
+                    print(f"{hash_str[:16]}...{hash_str[-16:]}\t{match}")
+
+if __name__ == "__main__":
+    args = get_args()
+    src = os.path.normpath(args.src)
+    main(src)
