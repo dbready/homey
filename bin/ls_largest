@@ -7,8 +7,8 @@ set -o pipefail   # fail on pipe errors
 
 if [ "$#" == 1 ]; then # directory provided
     DIRECTORY="$1"
-else # stdin
+else
     DIRECTORY="."
 fi
 
-du -a "${DIRECTORY}" | sort -n -r
+du --all "${DIRECTORY}" | sort --numeric-sort --reverse
