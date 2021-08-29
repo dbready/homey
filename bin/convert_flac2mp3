@@ -1,0 +1,13 @@
+#!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
+
+# Convert .flac to .mp3
+
+for fname in "$@"
+do
+    dst=${fname%.flac}.mp3
+    # -q:a set the VBR quality 0-9. 0 is best
+    ffmpeg -i "$fname" -q:a 3 "$dst"
+done
