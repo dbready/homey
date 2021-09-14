@@ -72,6 +72,21 @@ plt.rc('axes', labelsize=MEDIUM_SIZE)    # x and y labels
 plt.rc('figure', titlesize=BIGGER_SIZE)  # figure title
 ```
 
+## Matplotlib Histogram
+
+Histogram with the text in the center of the bar without oddball bin sizes.
+
+```
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.array([0, 2, 1, 1, 1, 0, 2, 2, 1, 2])
+
+items, frequency = np.unique(x, return_counts=True)
+plt.bar(items, frequency, align="center")
+```
+
+
 ## Matplotlib integer axis ticks
 
 Long way
