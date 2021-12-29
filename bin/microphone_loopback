@@ -1,0 +1,8 @@
+#!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
+
+# Route the microphone so can hear it locally
+
+arecord --format=cd - | aplay -
