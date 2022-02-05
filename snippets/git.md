@@ -40,3 +40,17 @@ git reset --soft main
 git add --all
 git commit -m "Genius, first try effort"
 ```
+
+## Shallow Clone Specific Branch/Tag/SHA/HEAD
+
+Clone only works with tag/branch but not commit id, so have to use this workaround, which does all three.
+The server has to be configured with `uploadpack.allowReachableSHA1InWant=true`, to query on SHA -GitHub currently enables this.
+Taken from [StackOverflow](https://stackoverflow.com/questions/31278902/how-to-shallow-clone-a-specific-commit-with-depth-1/43136160#43136160)
+
+```shell
+git init
+git remote add origin <url>
+git fetch --depth 1 origin <sha1>
+git checkout FETCH_HEAD
+```
+
