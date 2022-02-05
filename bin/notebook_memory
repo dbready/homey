@@ -1,0 +1,12 @@
+#!/bin/bash
+set -o errexit    # exit upon error
+set -o nounset    # fail on unset variables
+set -o pipefail   # fail on pipe errors
+
+# Memory monitor killer for Jupyter Notebook processes.
+# Presumably a child notebook went awry.
+# Note that both memory and swap need to fall below threshold
+
+# -m percentage of memory remaining before kill
+# -s percentage remaining of swap
+earlyoom -m 5 -s 10 --prefer "^(jupyter-lab)"
