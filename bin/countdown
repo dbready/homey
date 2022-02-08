@@ -31,12 +31,15 @@ if __name__ == "__main__":
     args = get_args()
 
     local_dt = datetime.datetime.now(datetime.timezone.utc).astimezone()
-    print(get_date_string(local_dt))
+    print(get_date_string(local_dt) + " Started")
 
     zero_width = len(str(args.seconds))
     # tz aware vs naive - easier to recreate the dt object and use that one for calculations
     current = datetime.datetime.now()
     goal = current + datetime.timedelta(seconds=args.seconds)
+    print(
+        get_date_string(local_dt + datetime.timedelta(seconds=args.seconds)) + " Target"
+    )
     try:
         while current < goal:
             time.sleep(1)
@@ -50,6 +53,6 @@ if __name__ == "__main__":
     completed = datetime.datetime.now(datetime.timezone.utc).astimezone()
     date_string = get_date_string(completed)
     if args.is_silent:
-        print(f"{date_string}")
+        print(f"{date_string} Completed")
     else:
-        print(f"{date_string} \a")  # '\a' is alert
+        print(f"{date_string} Completed\a")  # '\a' is alert
