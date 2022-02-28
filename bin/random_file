@@ -5,4 +5,4 @@ set -o pipefail   # fail on pipe errors
 
 # Open a random file in the directory with default application
 
-find . -maxdepth 1 -type f | shuf --head-count=1 | xargs --delimiter="\n" xdg-open
+find . -maxdepth 1 -type f | shuf --head-count=1 | tee /dev/tty | xargs --delimiter="\n" xdg-open
