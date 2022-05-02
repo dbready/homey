@@ -3,10 +3,12 @@
 
 ## Local Datetime Timezone
 
-```
+Generate local timezone aware datetime and extract the timezone.
+
+```python
 import datetime
 
-local_dt = datetime.datetime.now(datetime.timezone.utc).astimezone()
+local_dt = datetime.datetime.now(tz=datetime.timezone.utc).astimezone()
 local_timezone = local_dt.tzinfo
 ```
 
