@@ -7,7 +7,7 @@ git config --global user.email "me@example.com"
 git config --global user.name "MyName"
 ```
 
-## Discard uncommited changes
+## Discard uncommitted changes
 
 ```bash
 git reset --hard HEAD
@@ -54,3 +54,17 @@ git fetch --depth 1 origin <sha1>
 git checkout FETCH_HEAD
 ```
 
+## Private Github Access
+
+~/.ssh/config
+```
+Host github.com
+    HostName github.com
+    User sweet_username
+    IdentityFile ~/.ssh/github_private_keyfile
+    PreferredAuthentications publickey
+```
+
+Confirm SSH is working: `ssh -T git@github.com`
+
+Future clones: `ssh://git@github.com/repo/repo.git`
