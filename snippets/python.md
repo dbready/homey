@@ -61,9 +61,9 @@ https://stackoverflow.com/questions/3899980/how-to-change-the-font-size-on-a-mat
 ```python
 import matplotlib.pyplot as plt
 
-SMALL_SIZE = 12
-MEDIUM_SIZE = 14
-BIGGER_SIZE = 18
+SMALL_SIZE = 16
+MEDIUM_SIZE = 18
+BIGGER_SIZE = 24
 
 plt.rc('font', size=SMALL_SIZE)          # default text sizes
 plt.rc('axes', titlesize=SMALL_SIZE)     # axes title
