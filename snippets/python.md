@@ -1,5 +1,22 @@
 # Python
 
+## Oracle DB Connection
+
+Oracle makes distinction between service name (abstraction) and SID (specific server), with some preferences for one vs the other.
+Constructing through the DSN style always works.
+
+```python
+import cx_Oracle
+
+def build_oracle_connection(username: str, password: str, hostname: str, port: int, database: str) -> cx_Oracle.Connection:
+    """
+    Return Oracle Database connection from the provided components.
+    Some run-around because Oracle makes a distinction between SID and service name. Constructing a dsn_string always works.
+    """
+    dsn_string = cx_Oracle.makedsn(hostname, port, database)
+    connection = cx_Oracle.connect(username, password, dsn_string)
+    return connection
+```
 
 ## Local Datetime Timezone
 
