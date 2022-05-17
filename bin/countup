@@ -13,7 +13,14 @@ if __name__ == "__main__":
             time.sleep(1)
             current = datetime.datetime.now()
             delta_seconds = (current - start).total_seconds()
-            print(f"{str(round(delta_seconds))}", end="\r", flush=True)
+            minutes = delta_seconds // 60
+            hours = minutes // 60
+            supplemental = ""
+            if minutes > 0:
+                remainder = delta_seconds % 60
+                supplemental = f"\t{str(int(hours))}:{str(int(minutes)).zfill(2)}:{str(int(remainder)).zfill(2)}"
+
+            print(f"{str(round(delta_seconds))}{supplemental}", end="\r", flush=True)
     except KeyboardInterrupt:
         # good ol Ctrl-C
         print()  # newline after the ^C
